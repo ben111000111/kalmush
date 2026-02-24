@@ -16,45 +16,12 @@
             --text-muted: #94a3b8;
         }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text-main);
-            direction: rtl;
-            padding-bottom: 40px;
-        }
-
-        header {
-            background: rgba(22, 31, 46, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid var(--accent);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        #clock {
-            font-family: 'Courier New', monospace;
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--success);
-        }
-
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text-main); direction: rtl; padding-bottom: 40px; }
+        header { background: rgba(22, 31, 46, 0.9); backdrop-filter: blur(10px); padding: 15px; text-align: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        #clock { font-family: 'Courier New', monospace; font-size: 2.5rem; font-weight: 800; color: var(--success); }
         .nav { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-        .btn {
-            padding: 10px 25px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: var(--panel);
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .btn { padding: 10px 25px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: var(--panel); color: white; cursor: pointer; font-weight: bold; }
         .btn.active { background: var(--accent); color: var(--bg); }
-
         .container { max-width: 900px; margin: auto; padding: 0 15px; }
 
         .main-hero {
@@ -67,46 +34,15 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.5);
         }
         .main-hero h2 { font-size: 2.2rem; margin: 15px 0 5px; }
-        .main-hero .phone { 
-            font-size: 3rem; 
-            color: var(--accent); 
-            display: block; 
-            margin: 10px 0;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-decoration: none;
-        }
+        .main-hero .phone { font-size: 3rem; color: var(--accent); display: block; margin: 10px 0; font-weight: 900; letter-spacing: 2px; text-decoration: none; }
 
-        .secondary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .square-card {
-            background: var(--panel);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            aspect-ratio: 1 / 1;
-        }
+        .secondary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .square-card { background: var(--panel); border-radius: 15px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center; aspect-ratio: 1 / 1; }
         .square-card h3 { margin: 10px 0 5px; font-size: 1.1rem; }
         .square-card p { color: var(--accent); font-weight: bold; margin: 0; font-size: 1rem; }
 
         .backup-row { display: flex; flex-wrap: wrap; gap: 10px; }
-        .backup-item {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--warning);
-            padding: 8px 15px;
-            border-radius: 10px;
-            flex: 1;
-            min-width: 140px;
-            text-align: center;
-        }
+        .backup-item { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); padding: 8px 15px; border-radius: 10px; flex: 1; min-width: 140px; text-align: center; }
 
         .admin-form { background: var(--panel); padding: 20px; border-radius: 15px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .admin-form input, .admin-form select { background: var(--bg); border: 1px solid #334155; color: white; padding: 10px; border-radius: 6px; }
@@ -114,11 +50,7 @@
         table { width: 100%; border-collapse: collapse; background: var(--panel); }
         th, td { padding: 12px; border-bottom: 1px solid #334155; text-align: right; }
 
-        @media (max-width: 600px) {
-            .main-hero h2 { font-size: 1.8rem; }
-            .main-hero .phone { font-size: 2.2rem; }
-            .secondary-grid { grid-template-columns: 1fr 1fr; }
-        }
+        @media (max-width: 600px) { .main-hero h2 { font-size: 1.8rem; } .main-hero .phone { font-size: 2.2rem; } .secondary-grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
@@ -230,42 +162,29 @@
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('he-IL', {hour12: false});
         document.getElementById('date-info').innerText = getDayInfo(now) + " | " + now.toLocaleDateString('he-IL');
+        if (now.getSeconds() === 0) renderMain();
     }
     setInterval(updateTime, 1000); updateTime();
 
-    function toMin(t) {
-        if (!t) return 0;
-        const [h, m] = t.split(':').map(Number);
-        return h * 60 + m;
-    }
+    function toMin(t) { if (!t) return 0; const [h, m] = t.split(':').map(Number); return h * 60 + m; }
 
     function isShiftActive(shift, now) {
         const [name, phone, dayLabel, startStr, endStr] = shift;
         if (startStr === "00:00" && endStr === "00:00") return false;
-
-        const curMin = toMin(now.getHours() + ":" + now.getMinutes());
+        const curMin = (now.getHours() * 60) + now.getMinutes();
         const todayLabel = getDayInfo(now);
-        
-        // יום האתמול לצורך בדיקת משמרות לילה
-        const yesterday = new Date(now);
-        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayLabel = getDayInfo(yesterday);
-
-        const startMin = toMin(startStr);
-        const endMin = toMin(endStr);
+        const startMin = toMin(startStr), endMin = toMin(endStr);
         const crossesMidnight = endMin <= startMin;
 
-        // בדיקה 1: האם המשמרת התחילה היום והיא פעילה עכשיו
         const dayMatchToday = (dayLabel === "כל יום" || dayLabel === todayLabel || (todayLabel !== "שישי" && todayLabel !== "שבת" && dayLabel === "א ב ג ד ה"));
         if (dayMatchToday) {
             if (!crossesMidnight && curMin >= startMin && curMin < endMin) return true;
-            if (crossesMidnight && curMin >= startMin) return true; // התחיל היום בלילה וטרם הגיע חצות
+            if (crossesMidnight && curMin >= startMin) return true;
         }
-
-        // בדיקה 2: האם המשמרת התחילה אתמול בלילה ועדיין פעילה היום לפנות בוקר
         const dayMatchYesterday = (dayLabel === "כל יום" || dayLabel === yesterdayLabel || (yesterdayLabel !== "שישי" && yesterdayLabel !== "שבת" && dayLabel === "א ב ג ד ה"));
         if (dayMatchYesterday && crossesMidnight && curMin < endMin) return true;
-
         return false;
     }
 
@@ -276,31 +195,39 @@
         hero.innerHTML = ""; grid.innerHTML = ""; backup.innerHTML = "";
 
         const now = new Date();
-        const today = getDayInfo(now);
+        const todayLabel = getDayInfo(now);
         let active = [];
         let backups = [];
 
         shifts.forEach(s => {
             if (s[3] === "00:00" && s[4] === "00:00") {
-                if (s[2] === "כל יום" || s[2] === today) backups.push(s);
+                if (s[2] === "כל יום" || s[2] === todayLabel) backups.push(s);
             } else if (isShiftActive(s, now)) {
                 active.push(s);
             }
         });
 
+        // מיון אקטיביים לפי ההוראה החדשה:
         active.sort((a, b) => {
-            if (a[2] !== b[2]) return a[2] === today ? -1 : 1;
-            return toMin(a[3]) - toMin(b[3]);
+            // 1. עדיפות ליום ספציפי על פני "כל יום"
+            const isSpecA = (a[2] !== "כל יום");
+            const isSpecB = (b[2] !== "כל יום");
+
+            if (isSpecA && !isSpecB) return -1;
+            if (!isSpecA && isSpecB) return 1;
+
+            // 2. בתוך אותה קבוצה, מי שהתחיל מאוחר יותר (יותר רלוונטי לעכשיו)
+            return toMin(b[3]) - toMin(a[3]);
         });
 
         active.forEach((s, i) => {
             if (i === 0) {
                 hero.innerHTML = `
                 <div class="main-hero">
-                    <span style="background:var(--success); color:black; padding:4px 12px; border-radius:4px; font-weight:bold;">כונן ראשי</span>
+                    <span style="background:var(--success); color:black; padding:4px 12px; border-radius:4px; font-weight:bold;">${s[2] === "כל יום" ? 'כונן (כל יום)' : 'כונן מיוחד להיום'}</span>
                     <h2>${s[0]}</h2>
                     <a href="tel:${s[1]}" class="phone">${s[1]}</a>
-                    <div style="color: var(--text-muted); font-size:1.1rem;">משמרת: ${s[3]} - ${s[4]} | ${s[2]}</div>
+                    <div style="color: var(--text-muted); font-size:1.1rem;">משמרת: ${s[3]} - ${s[4]}</div>
                 </div>`;
             } else {
                 grid.innerHTML += `
@@ -316,6 +243,7 @@
         backups.forEach(s => {
             backup.innerHTML += `<div class="backup-item"><strong>${s[0]}</strong><br><small>${s[1]}</small></div>`;
         });
+        if (active.length === 0) hero.innerHTML = "<div style='text-align:center; padding:20px; color:var(--text-muted);'>אין כוננים פעילים כרגע</div>";
     }
 
     function renderAdmin() {
@@ -358,7 +286,6 @@
         v === 'main' ? renderMain() : renderAdmin();
     }
 
-    setInterval(renderMain, 60000); // רענון תצוגה כל דקה
     renderMain();
 </script>
 </body>
