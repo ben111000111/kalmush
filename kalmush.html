@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קלמוש</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f6f9;
+}
+header{
+  background:#111827;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+#clock{
+  font-size:32px;
+  font-weight:bold;
+}
+.container{
+  padding:15px;
+  max-width:1100px;
+  margin:auto;
+}
+.card{
+  background:white;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+.primary{
+  border:3px solid #16a34a;
+  font-size:22px;
+}
+.secondary{
+  font-size:16px;
+}
+.backup{
+  background:#fef3c7;
+}
+.emergency{
+  background:#fee2e2;
+  border:2px solid red;
+  font-weight:bold;
+}
+h2{
+  margin-top:25px;
+}
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+.nav{
+  text-align:center;
+  margin:10px;
+}
+input,select{
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+  font-size:14px;
+}
+@media(max-width:768px){
+  #clock{font-size:22px;}
+  .primary{font-size:18px;}
+  table{font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>קלמוש</h1>
+<div id="clock"></div>
+</header>
+
+<div class="nav">
+<button onclick="showMain()">מסך ראשי</button>
+<button onclick="showAdmin()">ניהול</button>
+</div>
+
+<div class="container" id="mainView"></div>
+<div class="container" id="adminView" style="display:none;"></div>
+
+<script>
+
+let shifts = [
+["יעקב ישראל פלמן","0548435028","כל יום","23:45","00:15"],
+["מרדכי בלס","0548419190","כל יום","22:00","01:00"],
+["זאב ביליצר","0527614282","כל יום","23:00","00:00"],
+["נפתלי סנראי","0548090192","כל יום","23:00","01:30"],
+["מיכאל פינדר","0548445644","כל יום","23:00","01:00"],
+["יצחק קרלינסקי","0527694427","כל יום","23:30","01:00"],
+["אברהם קורנברג","0584158762","כל יום","00:00","01:30"],
+["משה גרייזמן","0548425337","מוצאי שבת","23:00","04:30"],
+["ישראל מובשוביץ","0527152353","ראשון","23:00","04:30"],
+["מרדכי בלס","0548419190","שני","23:00","04:30"],
+["שמואל דינין","0504152156","שלישי","23:00","04:30"],
+["יצחק קרלינסקי","0527694427","רביעי","23:00","04:30"],
+["ישראל קהן","0583299194","חמישי","23:00","04:30"],
+["אהרון מרדכי מילר","0527160151","כל יום","04:30","08:30"],
+["אריה קוזניץ","0583288201","א ב ג ד ה","08:30","09:30"],
+["בן ציון ברדפיס","0527148403","א ב ג ד ה","09:30","13:00"],
+["יעקב ישראל פלמן","0548435028","כל יום","09:00","13:15"],
+["יעקב סלמון","0502487806","כל יום","10:00","13:30"],
+["אלישע הגלר","0533171982","כל יום","11:00","12:00"],
+["ישראל קהן","0583299194","שישי","10:00","12:00"],
+["יעקב סלמון","0502487806","כל יום","13:30","14:00"],
+["יהושע זאבי","0548482257","ב ג ה","13:30","15:30"],
+["ישראל קהן","0583299194","כל יום","13:30","15:15"],
+["מרדכי שמואל אדלשטיין","0556749482","כל יום","14:00","15:45"],
+["אליהו שטיימן","0527663896","כל יום","14:00","14:30"],
+["אריה קוזניץ","0583288201","כל יום","14:00","16:00"],
+["יעקב ישראל לסמן","0504147053","כל יום","14:00","16:00"],
+["משה גרייזמן","0548425337","כל יום","15:00","16:00"],
+["אהרון מרדכי מילר","0527160151","כל יום","16:00","19:00"],
+["משה גרייזמן","0548425337","כל יום","16:00","19:00"],
+["דוד שקלאר","0526289005","כל יום","16:00","19:00"],
+["יעקב ישראל לסמן","0504147053","כל יום","16:00","19:00"],
+["אהרון מרדכי מילר","0527160151","כל יום","19:00","21:00"],
+["יעקב ישראל לסמן","0504147053","כל יום","19:00","23:00"],
+["דוד שקלאר","0526289005","כל יום","19:00","23:00"],
+["יהודה בנדיקט","0528442341","כל יום","20:30","21:30"],
+["יעקב סלמון","0502487806","כל יום","21:00","23:00"],
+["אריה קוזניץ","0583288201","כל יום","21:00","23:00"],
+["זאב ביליצר","0527614282","כל יום","22:00","23:00"],
+["נפתלי סנראי","0548090192","כל יום","22:30","23:00"],
+["יוסי ביטון","0583214835","כל יום","07:00","23:00"],
+["אליהו סלמון","0527160570","כל יום","07:00","23:00"],
+["שמואל דינין","0504152156","כל יום","07:00","23:00"],
+["עקיבא יוסף קניג","0504116626","כל יום","00:00","00:00"],
+["אשתו של קניג חירום בלבד","0548408939","כל יום","00:00","00:00"],
+["בנימין הקשר","0527158183","כל יום","00:00","00:00"]
+];
+
+function nowInfo(){
+  let now=new Date();
+  document.getElementById("clock").innerText=
+  now.toLocaleDateString("he-IL")+" "+now.toLocaleTimeString("he-IL");
+}
+
+setInterval(nowInfo,1000); nowInfo();
+
+function showMain(){
+  document.getElementById("mainView").style.display="block";
+  document.getElementById("adminView").style.display="none";
+  renderMain();
+}
+
+function showAdmin(){
+  document.getElementById("mainView").style.display="none";
+  document.getElementById("adminView").style.display="block";
+  renderAdmin();
+}
+
+function timeToMin(t){
+  let [h,m]=t.split(":").map(Number);
+  return h*60+m;
+}
+
+function renderMain(){
+  let container=document.getElementById("mainView");
+  container.innerHTML="";
+  let now=new Date();
+  let current=timeToMin(now.toTimeString().slice(0,5));
+
+  let active=[];
+  let backups=[];
+
+  shifts.forEach(s=>{
+    let start=timeToMin(s[3]);
+    let end=timeToMin(s[4]);
+    let isBackup = (s[3]=="00:00" && s[4]=="00:00");
+    let inRange = start<=end ? (current>=start && current<=end)
+                             : (current>=start || current<=end);
+    if(isBackup) backups.push(s);
+    else if(inRange) active.push(s);
+  });
+
+  active.sort((a,b)=>timeToMin(a[3])-timeToMin(b[3]));
+
+  if(active.length>0){
+    let primary=active[0];
+    let div=document.createElement("div");
+    div.className="card primary";
+    div.innerHTML="<b>ראשי:</b><br>"+primary[0]+"<br>"+primary[1]+"<br>"+primary[3]+"-"+primary[4];
+    container.appendChild(div);
+
+    active.slice(1).forEach(s=>{
+      let d=document.createElement("div");
+      d.className="card secondary";
+      d.innerHTML=s[0]+"<br>"+s[1]+"<br>"+s[3]+"-"+s[4];
+      container.appendChild(d);
+    });
+  }
+
+  if(backups.length>0){
+    let h=document.createElement("h2");
+    h.innerText="גיבויים";
+    container.appendChild(h);
+
+    backups.forEach(s=>{
+      let d=document.createElement("div");
+      d.className="card backup";
+      if(s[0].includes("חירום")) d.classList.add("emergency");
+      d.innerHTML=s[0]+"<br>"+s[1];
+      container.appendChild(d);
+    });
+  }
+}
+
+function renderAdmin(){
+  let div=document.getElementById("adminView");
+  let html="<h2>ניהול משמרות</h2><table><tr><th>שם</th><th>טלפון</th><th>יום</th><th>משעה</th><th>עד</th></tr>";
+  shifts.forEach(s=>{
+    html+="<tr><td>"+s[0]+"</td><td>"+s[1]+"</td><td>"+s[2]+"</td><td>"+s[3]+"</td><td>"+s[4]+"</td></tr>";
+  });
+  html+="</table>";
+  div.innerHTML=html;
+}
+
+renderMain();
+
+</script>
+</body>
+</html>
