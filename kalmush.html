@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>קלמוש</title>
+    <title>קלמוש... וכל השאר סתם</title>
     <style>
         :root {
             --bg: #0f172a;
@@ -64,10 +64,10 @@
         }
 
         .btn.active { background: var(--accent); color: var(--bg); }
+        .btn-sort { background: var(--panel); border: 1px solid var(--success); color: var(--success); margin-bottom: 10px; width: 100%; }
 
         .container { max-width: 800px; margin: auto; padding: 0 15px; }
 
-        /* כרטיסיות כוננים */
         .card {
             background: var(--panel);
             border-radius: 15px;
@@ -98,7 +98,6 @@
             display: inline-block;
         }
 
-        /* ניהול */
         .admin-form {
             background: var(--panel);
             padding: 15px;
@@ -107,6 +106,17 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid var(--accent);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
         .admin-form input, .admin-form select {
@@ -167,6 +177,10 @@
         <input type="time" id="endIn">
         <button class="btn active" onclick="addShift()" style="grid-column: span 2;">הוסף כונן</button>
     </div>
+
+    <input type="text" id="searchIn" class="search-box" placeholder="🔍 חיפוש לפי שם או טלפון..." onkeyup="renderAdmin()">
+    <button class="btn btn-sort" onclick="sortShiftsByRelevance()">⇅ מיין לפי רלוונטיות (היום והשעה)</button>
+
     <div style="overflow-x: auto;">
         <table id="adminTable">
             <thead>
@@ -182,7 +196,6 @@
 </div>
 
 <script>
-    // הרשימה המלאה כפי שסופקה
     const initialShifts = [
         ["יעקב ישראל פלמן","0548435028","כל יום","23:45","00:15"],
         ["מרדכי בלס","0548419190","כל יום","22:00","01:00"],
@@ -194,7 +207,7 @@
         ["משה גרייזמן","0548425337","מוצאי שבת","23:00","04:30"],
         ["ישראל מובשוביץ","0527152353","ראשון","23:00","04:30"],
         ["מרדכי בלס","0548419190","שני","23:00","04:30"],
-        ["שמואל דינין","0504116626","שלישי","23:00","04:30"],
+        ["שמואל דינין","0504152156","שלישי","23:00","04:30"],
         ["יצחק קרלינסקי","0527694427","רביעי","23:00","04:30"],
         ["ישראל קהן","0583299194","חמישי","23:00","04:30"],
         ["אהרון מרדכי מילר","0527160151","כל יום","04:30","08:30"],
@@ -255,6 +268,27 @@
         return h * 60 + m;
     }
 
+    function sortShiftsByRelevance() {
+        const today = getTodayLabel();
+        const isWeekday = "א ב ג ד ה".includes(today);
+
+        shifts.sort((a, b) => {
+            const dayA = a[2];
+            const dayB = b[2];
+            const isTodayA = (dayA === today || (isWeekday && dayA === "א ב ג ד ה"));
+            const isTodayB = (dayB === today || (isWeekday && dayB === "א ב ג ד ה"));
+
+            if (isTodayA && !isTodayB) return -1;
+            if (!isTodayA && isTodayB) return 1;
+            if (dayA === "כל יום" && dayB !== "כל יום" && !isTodayB) return -1;
+            if (dayB === "כל יום" && dayA !== "כל יום" && !isTodayA) return 1;
+            return toMin(a[3]) - toMin(b[3]);
+        });
+
+        localStorage.setItem('klm_shifts', JSON.stringify(shifts));
+        renderAdmin();
+    }
+
     function renderMain() {
         const activeContainer = document.getElementById('activeContainer');
         const backupContainer = document.getElementById('backupContainer');
@@ -273,7 +307,6 @@
             const start = toMin(startStr);
             const end = toMin(endStr);
             const isBackup = (startStr === "00:00" && endStr === "00:00");
-
             const dayMatch = (day === "כל יום" || day === today || (isWeekday && day === "א ב ג ד ה") || (day.includes(today)));
 
             if (dayMatch) {
@@ -321,13 +354,17 @@
 
     function renderAdmin() {
         const body = document.getElementById('adminBody');
+        const searchTerm = document.getElementById('searchIn').value.toLowerCase();
         body.innerHTML = "";
+        
         shifts.forEach((s, i) => {
-            body.innerHTML += `<tr>
-                <td><strong>${s[0]}</strong><br><small>${s[1]}</small></td>
-                <td>${s[2]}<br>${s[3]}-${s[4]}</td>
-                <td><button class="btn-del" onclick="deleteShift(${i})">✖</button></td>
-            </tr>`;
+            if (s[0].toLowerCase().includes(searchTerm) || s[1].includes(searchTerm)) {
+                body.innerHTML += `<tr>
+                    <td><strong>${s[0]}</strong><br><small>${s[1]}</small></td>
+                    <td>${s[2]}<br>${s[3]}-${s[4]}</td>
+                    <td><button class="btn-del" onclick="deleteShift(${i})">✖</button></td>
+                </tr>`;
+            }
         });
     }
 
@@ -338,11 +375,11 @@
         shifts.push([name, phone, document.getElementById('dayIn').value, document.getElementById('startIn').value || "00:00", document.getElementById('endIn').value || "00:00"]);
         localStorage.setItem('klm_shifts', JSON.stringify(shifts));
         renderAdmin();
-        alert("נוסף");
+        alert("נוסף בהצלחה");
     }
 
     function deleteShift(i) {
-        if (confirm("למחוק?")) {
+        if (confirm("למחוק את הכונן?")) {
             shifts.splice(i, 1);
             localStorage.setItem('klm_shifts', JSON.stringify(shifts));
             renderAdmin();
