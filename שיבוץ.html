@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>יד שרה | ניהול שיבוצים - מוקד מצוקה בנים</title>
+    <title>יד שרה | ניהול שיבוצים מבוסס ענן</title>
     <style>
         :root {
             --bg: #0a0f18;
@@ -19,36 +19,38 @@
 
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text-main); direction: rtl; display: flex; flex-direction: column; min-height: 100vh; }
         header { background: rgba(22, 31, 46, 0.9); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
-        .container { max-width: 1300px; margin: 0 auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
 
-        .week-title-display { text-align: center; margin: 20px 0; padding: 15px; background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 15px; border-bottom: 4px solid var(--accent); }
-        .week-title-display h2 { font-size: 2.4rem; margin: 5px 0; }
+        .week-title-display { text-align: center; margin: 20px 0; padding: 15px; background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 15px; border-bottom: 4px solid var(--accent); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .week-title-display h2 { font-size: 2.2rem; margin: 5px 0; }
 
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--panel); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); }
-        .lock-status { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .lock-status { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; padding: 5px 12px; border-radius: 20px; background: rgba(0,0,0,0.2); }
         .status-locked { color: var(--danger); }
-        .status-unlocked { color: var(--success); }
+        .status-unlocked { color: var(--success); border: 1px solid var(--success); }
 
         .admin-only { display: none; margin-bottom: 20px; }
         body.unlocked .admin-only { display: flex; gap: 10px; justify-content: center; }
 
-        .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-new { background: var(--success); color: #000; }
         .btn-del { background: var(--danger); color: white; }
-        .row-ctrl { padding: 2px 8px; font-size: 1rem; margin: 0 2px; background: #1e293b; color: white; border: 1px solid var(--accent); border-radius: 4px; }
-
-        .table-wrapper { overflow-x: auto; background: var(--panel); border-radius: 15px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
-        th, td { border: 1px solid var(--border); padding: 8px; text-align: center; position: relative; }
-        th { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
-
-        .shift-type-cell { background: rgba(34, 197, 94, 0.08); font-weight: bold; color: var(--success); width: 80px; }
+        .btn-dup { background: var(--accent); color: #000; }
         
-        .slot-container { display: flex; flex-direction: column; gap: 2px; position: relative; min-height: 50px; justify-content: center; border-radius: 6px; padding: 4px; transition: background 0.3s ease; }
+        .row-ctrl { padding: 2px 8px; font-size: 1rem; margin: 2px; background: #1e293b; color: white; border: 1px solid var(--accent); border-radius: 4px; cursor: pointer; }
+
+        .table-wrapper { overflow-x: auto; background: var(--panel); border-radius: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        th, td { border: 1px solid var(--border); padding: 6px; text-align: center; position: relative; }
+        th { background: rgba(56, 189, 248, 0.1); color: var(--accent); padding: 12px; font-size: 0.9rem; }
+
+        .shift-type-cell { background: rgba(34, 197, 94, 0.08); font-weight: bold; color: var(--success); width: 85px; }
+        
+        .slot-container { display: flex; flex-direction: column; gap: 2px; position: relative; min-height: 55px; justify-content: center; border-radius: 6px; padding: 4px; transition: background 0.3s ease; }
         .name-input { width: 100%; background: transparent; border: none; color: white; text-align: center; font-size: 1rem; outline: none; font-weight: bold; }
         .note-input { width: 100%; background: transparent; border: none; color: var(--warning); text-align: center; font-size: 0.75rem; outline: none; font-style: italic; }
         
-        /* פלטת צבעים מורחבת למשבצות */
+        /* צבעי משבצות */
         .bg-none { background: transparent; }
         .bg-blue { background: rgba(56, 189, 248, 0.3); }
         .bg-green { background: rgba(34, 197, 94, 0.3); }
@@ -58,41 +60,45 @@
         .bg-pink { background: rgba(236, 72, 153, 0.3); }
         .bg-teal { background: rgba(20, 184, 166, 0.3); }
         .bg-yellow { background: rgba(234, 179, 8, 0.3); }
-        .bg-indigo { background: rgba(99, 102, 241, 0.3); }
 
-        .cell-paint-btn { 
-            position: absolute; top: 2px; left: 2px; font-size: 0.7rem; 
-            cursor: pointer; opacity: 0; transition: 0.2s; z-index: 10;
-        }
+        .cell-paint-btn { position: absolute; top: 2px; left: 2px; font-size: 0.7rem; cursor: pointer; opacity: 0; transition: 0.2s; z-index: 5; }
         body.unlocked .slot-container:hover .cell-paint-btn { opacity: 0.6; }
         body.unlocked .cell-paint-btn:hover { opacity: 1; transform: scale(1.2); }
 
         body:not(.unlocked) input { pointer-events: none; }
         input::placeholder { color: transparent; }
-        body.unlocked input::placeholder { color: rgba(255,255,255,0.1); }
+        body.unlocked input::placeholder { color: rgba(255,255,255,0.05); }
 
-        footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--text-muted); }
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; font-weight: bold; color: var(--accent); }
+
+        footer { text-align: center; padding: 25px; font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; }
+        select { background: #0f172a; color: white; border: 1px solid var(--accent); padding: 6px 12px; border-radius: 8px; outline: none; cursor: pointer; }
     </style>
 </head>
 <body>
+
+<div id="loadingOverlay">טוען נתונים מהענן...</div>
 
 <header><h1>מערכת שיבוץ | מוקד מצוקה</h1></header>
 
 <div class="container">
     <div class="week-title-display">
-        <h2 id="currentWeekHeading">...</h2>
+        <h2 id="currentWeekHeading">טוען...</h2>
     </div>
 
     <div class="top-bar">
         <div id="lockBtn" class="lock-status status-locked" onclick="handleLock()">
             <span id="lockIcon">🔒</span> <span id="lockText">לוח נעול</span>
         </div>
-        <select id="weekSelector" onchange="changeWeek()"></select>
+        <div class="week-select-area">
+            <span>בחר שבוע:</span>
+            <select id="weekSelector" onchange="changeWeek()"></select>
+        </div>
     </div>
 
     <div class="admin-only">
         <button class="btn btn-new" onclick="createNewWeek()">+ שבוע חדש</button>
-        <button class="btn btn-new" style="background: var(--accent)" onclick="duplicateWeek()">שכפל שבוע</button>
+        <button class="btn btn-dup" onclick="duplicateWeek()">שכפל שבוע</button>
         <button class="btn btn-del" onclick="deleteCurrentWeek()">מחק שבוע</button>
     </div>
 
@@ -110,19 +116,63 @@
     </div>
 </div>
 
+<footer>יד שרה - מוקד מצוקה | © 2026</footer>
+
 <script>
+    // הגדרות API וחיבור
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-9S7zEju9GpY_vR6WrpJIJFz7d__MvB8gR_j874GXvQN8ThISiQ9dj5wiQoKG5zokng/exec";
     const SECRET_CODE = "שיבוץ אחמש.";
     const dayOrder = [7, 0, 1, 2, 3, 4, 5, 6];
-    const cellColors = ['none', 'blue', 'green', 'red', 'purple', 'orange', 'pink', 'teal', 'yellow', 'indigo'];
+    const cellColors = ['none', 'blue', 'green', 'red', 'purple', 'orange', 'pink', 'teal', 'yellow'];
 
-    let allWeeks = JSON.parse(localStorage.getItem('klm_v5_weeks')) || {};
-    let currentWeekId = localStorage.getItem('klm_v5_id') || "";
+    let allWeeks = {};
+    let currentWeekId = "";
     let isUnlocked = false;
+
+    // פונקציות תקשורת עם גוגל שיטס
+    async function loadFromCloud() {
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            if (data && data.allWeeks) {
+                allWeeks = data.allWeeks;
+                currentWeekId = data.currentWeekId;
+            } else {
+                // שבוע ראשון אם הגיליון ריק
+                currentWeekId = "שבוע 1";
+                allWeeks[currentWeekId] = getEmptyWeek();
+            }
+        } catch (e) {
+            console.error("טעינה נכשלה:", e);
+            alert("שגיאה בחיבור לענן. מציג נתונים מקומיים.");
+        } finally {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            initSelector();
+            renderTable();
+            document.getElementById('currentWeekHeading').innerText = currentWeekId;
+        }
+    }
+
+    async function syncToCloud() {
+        const payload = JSON.stringify({ allWeeks, currentWeekId });
+        try {
+            // mode: no-cors משמש למניעת שגיאות CORS מול Apps Script בשליחה
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                body: payload
+            });
+            console.log("סונכרן לענן");
+        } catch (e) {
+            console.error("סנכרון נכשל:", e);
+        }
+    }
 
     function getEmptyWeek() {
         return {
             config: { 'בוקר': 3, 'ערב': 3, 'לילה': 1 },
-            cellColors: {}, // { "בוקר-0-7": "blue" }
+            cellColors: {},
             data: {} 
         };
     }
@@ -133,7 +183,7 @@
                 isUnlocked = true;
                 document.body.classList.add('unlocked');
                 document.getElementById('lockIcon').innerText = "🔓";
-                document.getElementById('lockText').innerText = "מצב עריכה";
+                document.getElementById('lockText').innerText = "מצב עריכה פעיל";
                 document.getElementById('lockBtn').className = "lock-status status-unlocked";
             } else alert("קוד שגוי!");
         } else {
@@ -156,12 +206,13 @@
             const rows = week.config[type] || 1;
             for (let i = 0; i < rows; i++) {
                 let tr = document.createElement('tr');
-
                 if (i === 0) {
                     tr.innerHTML += `<td class="shift-type-cell" rowspan="${rows}">
                         ${type}<br>
-                        <button class="row-ctrl admin-only" onclick="updateRows('${type}', 1)">+</button>
-                        <button class="row-ctrl admin-only" onclick="updateRows('${type}', -1)">-</button>
+                        <div class="admin-only">
+                            <button class="row-ctrl" onclick="updateRows('${type}', 1)">+</button>
+                            <button class="row-ctrl" onclick="updateRows('${type}', -1)">-</button>
+                        </div>
                     </td>`;
                 }
 
@@ -170,7 +221,6 @@
                     const nameVal = week.data[cellId] || "";
                     const noteVal = week.data['note-'+cellId] || "";
                     const colorClass = "bg-" + (week.cellColors[cellId] || 'none');
-                    
                     const isSaturdayDisabled = (d === 6 && i >= 2 && type !== 'לילה');
 
                     if (isSaturdayDisabled) {
@@ -196,30 +246,32 @@
         const next = cellColors[(cellColors.indexOf(curr) + 1) % cellColors.length];
         week.cellColors[cellId] = next;
         
-        // עדכון ויזואלי מהיר בלי לרנדר את כל הטבלה
         const el = document.getElementById('cont-' + cellId);
         cellColors.forEach(c => el.classList.remove('bg-' + c));
         el.classList.add('bg-' + next);
-        
-        saveData();
+        syncToCloud();
     }
 
     function updateRows(type, diff) {
         allWeeks[currentWeekId].config[type] = Math.max(1, (allWeeks[currentWeekId].config[type] || 1) + diff);
-        saveAndRender();
+        renderTable();
+        syncToCloud();
     }
 
+    let timeout = null;
     function updateData(id, val) {
         allWeeks[currentWeekId].data[id] = val;
-        saveData();
+        // Debounce: חוסך שליחות מיותרות בזמן הקלדה מהירה
+        clearTimeout(timeout);
+        timeout = setTimeout(syncToCloud, 1000);
     }
 
     function createNewWeek() {
-        const name = prompt("שם השבוע (למשל: פרשת כי תשא):");
+        const name = prompt("שם השבוע החדש:");
         if (name && !allWeeks[name]) {
             allWeeks[name] = getEmptyWeek();
             currentWeekId = name;
-            saveAndInit();
+            saveAndRefresh();
         }
     }
 
@@ -228,36 +280,27 @@
         if (name && !allWeeks[name]) {
             allWeeks[name] = JSON.parse(JSON.stringify(allWeeks[currentWeekId]));
             currentWeekId = name;
-            saveAndInit();
+            saveAndRefresh();
         }
     }
 
     function deleteCurrentWeek() {
-        if (confirm("למחוק את השבוע הנוכחי?") && Object.keys(allWeeks).length > 1) {
+        if (Object.keys(allWeeks).length > 1 && confirm("למחוק שבוע זה?")) {
             delete allWeeks[currentWeekId];
             currentWeekId = Object.keys(allWeeks)[0];
-            saveAndInit();
+            saveAndRefresh();
         }
     }
 
     function changeWeek() {
         currentWeekId = document.getElementById('weekSelector').value;
-        saveAndRender();
-    }
-
-    function saveData() {
-        localStorage.setItem('klm_v5_weeks', JSON.stringify(allWeeks));
-        localStorage.setItem('klm_v5_id', currentWeekId);
-    }
-
-    function saveAndRender() {
-        saveData();
         document.getElementById('currentWeekHeading').innerText = currentWeekId;
         renderTable();
+        syncToCloud();
     }
 
-    function saveAndInit() {
-        saveData();
+    function saveAndRefresh() {
+        syncToCloud();
         initSelector();
         renderTable();
         document.getElementById('currentWeekHeading').innerText = currentWeekId;
@@ -271,12 +314,8 @@
         });
     }
 
-    if (!currentWeekId || !allWeeks[currentWeekId]) {
-        currentWeekId = "שבוע 1";
-        allWeeks[currentWeekId] = getEmptyWeek();
-    }
-    initSelector();
-    saveAndRender();
+    // הפעלה ראשונית
+    loadFromCloud();
 </script>
 </body>
 </html>
